@@ -3,13 +3,8 @@ import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
-interface AuthContextType {
-  user: string | null;
-  login: (username: string, password: string) => Promise<void>;
-  logout: () => void;
-  error: string;
-  loading: boolean;
-}
+import { AuthContextType } from "./types";
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export default function AuthProvider({
   children,
@@ -23,8 +18,9 @@ export default function AuthProvider({
   useEffect(() => {
     const token = getCookie("token");
     const user = getCookie("user");
+
     if (token && user) {
-      setUser(user);
+      setUser(JSON.parse(user));
     } else {
       setUser(null);
     }
@@ -37,9 +33,10 @@ export default function AuthProvider({
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/login`,
         { email, password }
       );
+
       if (!data.error) {
         setCookie("token", data.token, { maxAge: 60 * 60 * 24 });
-        setCookie("user", data.username, { maxAge: 60 * 60 * 24 });
+        setCookie("user", JSON.stringify(data), { maxAge: 60 * 60 * 24 });
         setUser(data.username);
         router.push("/");
       } else {

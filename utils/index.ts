@@ -30,3 +30,20 @@ export const getProductById = async (id: string) => {
     console.log(error);
   }
 };
+
+export const addToCart = async (data: any) => {
+  try {
+    const response = await axiosClient.post("/api/cart/addToCart", data);
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const getCartList = async (userId: string) => {
+  try {
+    const response = await axiosClient.get("/api/cart/" + userId);
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};

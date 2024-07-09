@@ -14,15 +14,7 @@ import { Button } from "./ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 export const Header = () => {
@@ -81,8 +73,8 @@ export const Header = () => {
                 ) : user ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button className="outline-none p-0">
-                        Xin chào, {user} <ChevronDown className="pt-1" />
+                      <Button className="outline-none p-0 transition-all ease-linear duration-1000">
+                        {user.username} <ChevronDown className="pt-1" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56 text-black bg-white">
@@ -100,7 +92,7 @@ export const Header = () => {
               </li>
 
               <li>
-                <Link href="/">
+                <Link href="/cart">
                   <ShoppingCart />
                 </Link>
               </li>

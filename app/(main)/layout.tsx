@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { Header } from "@/components/header";
 import AuthProvider, { useAuth } from "../AppProvider";
 import Footer from "@/components/footer";
+import { Toaster } from "@/components/ui/toaster";
 const inter = Inter({ subsets: ["vietnamese"] });
 
 export const metadata: Metadata = {
@@ -23,6 +24,7 @@ export default function RootLayout({
             <Header />
             <main className="h-full">{children}</main>
             <Footer />
+            <Toaster />
           </AuthProvider>
         </div>
       </body>
