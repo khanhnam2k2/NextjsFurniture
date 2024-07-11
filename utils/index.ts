@@ -31,7 +31,14 @@ export const getProductById = async (id: string) => {
   }
 };
 
-export const addToCart = async (data: any) => {
+interface dataAddToCartProps {
+  userId: string;
+  productId: string;
+  price: string;
+  quantity: number;
+}
+
+export const addToCart = async (data: dataAddToCartProps) => {
   try {
     const response = await axiosClient.post("/api/cart/addToCart", data);
     return response;
@@ -39,9 +46,51 @@ export const addToCart = async (data: any) => {
     console.log(error);
   }
 };
-export const getCartList = async (userId: string) => {
+
+export const getCartList = async (userId: string | null) => {
   try {
     const response = await axiosClient.get("/api/cart/" + userId);
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getUser = async (token: string) => {
+  try {
+    const response = await axiosClient.get("/api/user/getUser", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const updateQuantityInCart = async (
+  userId: string,
+  itemId: string,
+  quantity: number
+) => {
+  try {
+    const response = await axiosClient.put("/api/cart/update", {
+      userId,
+      itemId,
+      quantity,
+    });
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const deleteItemInCart = async (userId: string, itemId: string) => {
+  try {
+    const response = await axiosClient.delete(
+      "/api/cart/delete/" + userId + "/" + itemId
+    );
     return response;
   } catch (error) {
     console.log(error);

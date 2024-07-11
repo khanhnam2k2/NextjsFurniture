@@ -4,6 +4,14 @@ import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import { AuthContextType } from "./types";
+import { getUser } from "@/utils";
+
+type UserProps = {
+  _id: string;
+  username: string;
+  email: string;
+  role: number;
+} | null;
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export default function AuthProvider({
@@ -11,49 +19,58 @@ export default function AuthProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [user, setUser] = useState<string | null>(null);
-  const [error, setError] = useState<string>("");
+  const [user, setUser] = useState<UserProps | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
+
   useEffect(() => {
     const token = getCookie("token");
-    const user = getCookie("user");
-
-    if (token && user) {
-      setUser(JSON.parse(user));
+    if (token) {
+      const fetchUser = async () => {
+        setLoading(true);
+        try {
+          const userRes = await getUser(token);
+          setUser(userRes.data);
+        } catch (error) {
+          console.log(error);
+          setUser(null);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchUser();
     } else {
+      setLoading(false);
       setUser(null);
     }
-    setLoading(false);
   }, []);
 
   const login = async (email: string, password: string) => {
     try {
-      const { data } = await axios.post(
+      const res = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/login`,
         { email, password }
       );
 
-      if (!data.error) {
-        setCookie("token", data.token, { maxAge: 60 * 60 * 24 });
-        setCookie("user", JSON.stringify(data), { maxAge: 60 * 60 * 24 });
-        setUser(data.username);
+      if (!res.data.error) {
+        setCookie("token", res.data.token, { maxAge: 60 * 60 * 24 });
+        setUser(res.data.user);
         router.push("/");
+        return { success: true, msg: "" };
       } else {
-        setError(data.error);
+        return { success: false, msg: res.data.error };
       }
     } catch (error) {
-      throw error;
+      return { success: false, msg: "Có lỗi gì đó xảy ra" };
     }
   };
   const logout = () => {
     deleteCookie("token");
-    deleteCookie("user");
     setUser(null);
     router.push("/login");
   };
   return (
-    <AuthContext.Provider value={{ user, login, logout, error, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

@@ -31,7 +31,7 @@ const formSchema = z.object({
 
 export function LoginForm() {
   const { toast } = useToast();
-  const { login, error } = useAuth();
+  const { login } = useAuth();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -42,13 +42,11 @@ export function LoginForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      await login(values.email, values.password);
-
-      if (error) {
+      const resp = await login(values.email, values.password);
+      if (!resp.success) {
         toast({
-          variant: "destructive",
-          title: "Lỗi",
-          description: error,
+          title: "Đăng nhập thất bại",
+          description: resp.msg,
         });
       }
     } catch (error) {

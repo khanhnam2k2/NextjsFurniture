@@ -10,6 +10,12 @@ export interface ProductProps {
   category: CategoryProps;
 }
 
+export type ProductInCartProps = {
+  _id: string;
+  price: number;
+  quantity: number;
+} & { product: ProductProps };
+
 export interface CategoryProps {
   _id: string;
   name: string;
@@ -18,11 +24,13 @@ export interface CategoryProps {
 }
 
 export type AuthContextType = {
-  login: (username: string, password: string) => Promise<void>;
+  login: (
+    username: string,
+    password: string
+  ) => Promise<{ success: boolean; msg: string }>;
   logout: () => void;
-  error: string;
   loading: boolean;
-} & { user: User };
+} & { user: User | null };
 
 export type User = {
   _id: string;
@@ -30,3 +38,8 @@ export type User = {
   email: string;
   role: number;
 };
+
+export interface LogoutResponseProps {
+  success: boolean;
+  message: string;
+}
